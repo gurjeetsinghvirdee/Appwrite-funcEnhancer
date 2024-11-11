@@ -9,17 +9,25 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onCommand:extension.authenticateAppwrite",
+    "onCommand:extension.createAppwriteFunction",
+    "onCommand:extension.deployAppwriteFunction"
+  ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
+        "command": "extension.authenticateAppwrite",
+        "title": "Authenticate with Appwrite"
+      },
+      {
         "command": "extension.createAppwriteFunction",
-        "title": "Appwrite: Create Function"
+        "title": "Create Appwrite Function"
       },
       {
         "command": "extension.deployAppwriteFunction",
-        "title": "Appwrite: Deploy Function"
+        "title": "Deploy Appwrite Function"
       }
     ]
   },

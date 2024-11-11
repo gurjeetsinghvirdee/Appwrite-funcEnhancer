@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
-import { AppwriteClient } from '../src/appwriteClient'
+import { AppwriteClient } from '../src/appwriteClient';
+import { authenticate } from '../src/authenticate';
 
 export function activate(context: vscode.ExtensionContext) {
 	// Create a status bar item
@@ -8,8 +9,12 @@ export function activate(context: vscode.ExtensionContext) {
 	statusBarItem.show();
 	context.subscriptions.push(statusBarItem);
 
+	// Register the authenticate command
+	const authenticateCommand = vscode.commands.registerCommand('extension.authenticateAppwrite', async () => {
+		await authenticate(context);
+	})
 
-    // Register the command
+    // Register the create command
     const createFunctionCommand = vscode.commands.registerCommand('extension.createAppwriteFunction', async () => {
 		statusBarItem.text = 'Creating function...';
         const functionName = await vscode.window.showInputBox({ prompt: 'Enter Function Name' });
@@ -123,5 +128,5 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
     // Add to subscriptions
-    context.subscriptions.push(createFunctionCommand, deployFunctionCommand);
+    context.subscriptions.push(createFunctionCommand, deployFunctionCommand, authenticateCommand);
 }
