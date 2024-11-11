@@ -2,11 +2,20 @@ import * as vscode from 'vscode';
 import { AppwriteClient } from '../src/appwriteClient'
 
 export function activate(context: vscode.ExtensionContext) {
+	// Create a status bar item
+	const statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
+	statusBarItem.text = 'Appwrite Extension';
+	statusBarItem.show();
+	context.subscriptions.push(statusBarItem);
+
+
     // Register the command
     const createFunctionCommand = vscode.commands.registerCommand('extension.createAppwriteFunction', async () => {
+		statusBarItem.text = 'Creating function...';
         const functionName = await vscode.window.showInputBox({ prompt: 'Enter Function Name' });
         if (!functionName) {
             vscode.window.showErrorMessage('Function name is required!');
+			statusBarItem.text = 'Function creation failed';
             return;
         }
 
@@ -53,7 +62,8 @@ export function activate(context: vscode.ExtensionContext) {
 
         const runtime = await vscode.window.showQuickPick(runtimes, { placeHolder: 'Select Runtime' }); 
         if (!runtime) { 
-            vscode.window.showErrorMessage('Runtime is required!'); 
+            vscode.window.showErrorMessage('Runtime is required!');
+			statusBarItem.text = 'Function creation failed'; 
             return; 
         }
 
@@ -62,14 +72,17 @@ export function activate(context: vscode.ExtensionContext) {
         try { 
             await client.createFunction(functionName, runtime.label); 
             vscode.window.showInformationMessage(`Function ${functionName} created successfully!`); 
+			statusBarItem.text = 'Function created';
         } catch (err) { 
             const error = err as { message: string }; 
             vscode.window.showErrorMessage(`Failed to create function: ${error.message}`); 
+			statusBarItem.text = 'Function creation failed';
         } 
     });
 
     // Register the deploy command
     const deployFunctionCommand = vscode.commands.registerCommand('extension.deployAppwriteFunction', async () => {
+		statusBarItem.text = 'Deploying function...';
         // Get list of functions from Appwrite
         const client = new AppwriteClient(context);
         let functions: vscode.QuickPickItem[] = [];
@@ -77,6 +90,7 @@ export function activate(context: vscode.ExtensionContext) {
             functions = await client.getFunctions();
         } catch (error) {
             vscode.window.showErrorMessage(`Failed to retrieve functions: ${(error as Error).message}`);
+			statusBarItem.text = 'Function deployment failed';
             return;
         }
 
@@ -84,6 +98,7 @@ export function activate(context: vscode.ExtensionContext) {
         const selectedFunction = await vscode.window.showQuickPick(functions, { placeHolder: 'Select function to deploy' });
         if (!selectedFunction) {
             vscode.window.showErrorMessage('Function selection is required!');
+			statusBarItem.text = 'Function deployment failed';
             return;
         }
 
@@ -91,6 +106,7 @@ export function activate(context: vscode.ExtensionContext) {
         const editor = vscode.window.activeTextEditor;
         if (!editor) {
             vscode.window.showErrorMessage('No active editor found!');
+			statusBarItem.text = 'Function deployment failed';
             return;
         }
         const functionCode = editor.document.getText();
@@ -99,8 +115,10 @@ export function activate(context: vscode.ExtensionContext) {
         try {
             await client.deployFunction(selectedFunction.label, functionCode);
             vscode.window.showInformationMessage(`Function ${selectedFunction.label} deployed successfully!`)
+			statusBarItem.text = 'Function deployed';
         } catch (error) {
             vscode.window.showErrorMessage(`Failed to deploy function: ${(error as Error).message}`);
+			statusBarItem.text = 'Function deployment failed';
         }
     });
 
