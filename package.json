@@ -16,6 +16,10 @@
       {
         "command": "extension.createAppwriteFunction",
         "title": "Appwrite: Create Function"
+      },
+      {
+        "command": "extension.deployAppwriteFunction",
+        "title": "Appwrite: Deploy Function"
       }
     ]
   },
